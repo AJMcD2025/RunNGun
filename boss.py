@@ -39,4 +39,4 @@ class Boss:
         direction = self.player_pos - self.boss_pos
         if direction.length() > 0:
             direction = direction.normalize()
-            self.boss_pos += direction * 80 * self.dt
+            self.boss_pos += direction * 90 * self.dt
