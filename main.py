@@ -1,5 +1,9 @@
 # Example file showing a circle moving on screen
-import pygame
+try:
+    import pygame  # type: ignore[import]
+except ImportError:
+    print("Error: pygame is not installed. Install it with: pip install pygame")
+    exit(1)
 
 class Game:
   def __init__(self):
