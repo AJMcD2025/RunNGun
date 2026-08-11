@@ -1,5 +1,5 @@
 from .player import Player
-from ..weapons.smg import SMG
+from .weapons.smg import SMG
 from ..utils.graphics import load_image
 
 class NinjaAlice(Player):

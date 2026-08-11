@@ -1,69 +1,48 @@
-# Example file showing a circle moving on screen
-try:
-    import pygame  # type: ignore[import]
-except ImportError:
-    print("Error: pygame is not installed. Install it with: pip install pygame")
-    exit(1)
+import pygame
 
-class Game:
-  def __init__(self):
+from characters.player import Player
+from weapons.smg import SMG
+from pickups.health_pickup import HealthPickup
+
+def main():
     pygame.init()
-    self.screen = pygame.display.set_mode((1280, 720))
-    self.clock = pygame.time.Clock()
-    self.running = True
-    self.dt = 0
-    self.player_pos = pygame.Vector2(self.screen.get_width() / 2, self.screen.get_height() / 2)
 
-  def process_input(self):
-    # This is a function that runs every frame to process input
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            self.running = False
+    screen = pygame.display.set_mode((1280, 720))
+    clock = pygame.time.Clock()
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-      self.player_pos.y -= 300 * self.dt        
-    if keys[pygame.K_s]:
-      self.player_pos.y += 300 * self.dt
-    if keys[pygame.K_a]:
-      self.player_pos.x -= 300 * self.dt
-    if keys[pygame.K_d]:
-      self.player_pos.x += 300 * self.dt     
-    
+    bullets_group = pygame.sprite.Group()
+    pickups_group = pygame.sprite.Group()
 
-  def render(self):
-    # This is a function that runs every frame to render the game state to the screen
-    # fill the screen with a color to wipe away anything from last frame
-    self.screen.fill("purple")
-    
-    
-    pygame.draw.circle(self.screen, "red", self.player_pos, 40)
+    player = Player(
+        pos=(200, 300),
+        weapon=SMG(),
+        bullets_group=bullets_group,
+        pickups_group=pickups_group
+    )
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
+    pickups_group.add(HealthPickup((400, 300)))
 
-  def update(self):
-    # This is a function that runs every frame to update the game state
-    pass
- 
-  def game_loop(self):
-    while self.running:
-      self.process_input()
-      self.update()
-      self.render()
+    running = True
+    while running:
+        dt = clock.tick(60) / 1000
 
-      # limits FPS to 60
-      # dt is delta time in seconds since last frame, used for framerate-
-      # independent physics.
-      self.dt = self.clock.tick(60) / 1000
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-# main entry point for our program
+        player.update(dt)
+        bullets_group.update(dt, [])
+        pickups_group.update(dt)
+
+        screen.fill("black")
+
+        pickups_group.draw(screen)
+        bullets_group.draw(screen)
+        screen.blit(player.image, player.rect)
+
+        pygame.display.flip()
+
+    pygame.quit()
+
 if __name__ == "__main__":
-  
-  game = Game()
-  
-  game.game_loop()
-  
-  pygame.quit()
+    main()
